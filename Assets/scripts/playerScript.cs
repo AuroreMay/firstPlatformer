@@ -12,7 +12,7 @@ public class playerScript : MonoBehaviour
     //variavel publica do tipo transform (componente) para pegar o groudcheck
     public LayerMask isGround;
     //variavel publica do tipo LayerMask (componente) para pegar a layer que quero checar
-    public bool Grounded, flip_Sprite;
+    public bool Grounded, flip_Sprite, isAttaking;
     //variaveis do tipo booleanos publica
     public float speed,jump_force,h,v;
     public int id_Anim;
@@ -34,10 +34,10 @@ public class playerScript : MonoBehaviour
         v = Input.GetAxisRaw("Vertical");
 
         //checando se meu h é maior ou menor e seu sprite está virado ou não
-        if (h > 0 && flip_Sprite == true) {
+        if (h > 0 && flip_Sprite == true && isAttaking == false) {
             flipSprite();
         }
-        if (h < 0 && flip_Sprite == false) {
+        else if (h < 0 && flip_Sprite == false && isAttaking == false) {
             flipSprite();
         }
         //checando se h é ou não diferente de zero para mudar a animação
@@ -47,9 +47,16 @@ public class playerScript : MonoBehaviour
         else{
             id_Anim = 0;
         }
+        if (Input.GetButtonDown("Fire1") && isAttaking == false){
+            playerAnimator.SetTrigger("attack");
+        }
         //checando o pulo para ver se o personagem pula ou não
         if (Input.GetButtonDown("Jump") && Grounded == true){
             playerRigidbody.AddForce(new Vector2(0,jump_force));
+        }
+        if (isAttaking == true && Grounded == true){
+            h = 0;
+            
         }
         /* usando a variavel do tipo animator definida anteriormente é possível usar "Set" para pegar um parâmetro
         do animator e definir como variável */
@@ -70,8 +77,22 @@ public class playerScript : MonoBehaviour
         flip_Sprite = !flip_Sprite;
         float x = transform.localScale.x;
         x *= -1;
-
         transform.localScale = new Vector3(x,transform.localScale.y,transform.localScale.z);
-
+    }
+    
+    public void isAttack(int atk){
+        switch (atk)
+        {
+            case 0: 
+                isAttaking = false;
+                break;
+            case 1:
+                isAttaking = true;
+                break;
+            default:
+                isAttaking = false;
+                break;
+    
+        }
     }
 }
